@@ -1,124 +1,202 @@
 <!DOCTYPE html>
-<html>
-        <head>
-	<meta charset="utf-8">	
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Look and Ask / Bienvenido</title>
-        <!--Font link from "Google Fonts". Select the Font and copy the link and agree font family in "Style.css"-->
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
-        <link rel="shortcut icon" href="img/laa_favicon.jpg" type="image/x-icon">
-        <link rel="stylesheet" href="style.css">
-    </head>
-<!-- Cabecera -->
-<h1>Capturar Webcam con HTML5 y Javascript</h1>
-<h2>Raúl Prieto Fernández</h2>
-<div>
+<html lang="es">
+
+<head>
+	<!--
+		Tomar una fotografía y guardarla en un archivo v3
+	    @date 2018-10-22
+	    @author parzibyte
+	    @web parzibyte.me/blog
+	-->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>Tomar foto con Javascript y PHP v3.0</title>
+	<style>
+		@media only screen and (max-width: 700px) {
+			video {
+				max-width: 100%;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<h1>Tomar foto con JavaScript v3.0</h1>
+	<p>
+		Programado por Luis Cabrera Benito a.k.a. <a target="_blank" href="https://www.parzibyte.me/blog">parzibyte</a>
+	</p>
+	<h1>Selecciona un dispositivo</h1>
+	<div>
 		<select name="listaDeDispositivos" id="listaDeDispositivos"></select>
 		<button id="boton">Tomar foto</button>
 		<p id="estado"></p>
-</div>
-
-<!-- Mensaje de error -->
-<span name="errorMsg"></span>
-
-<!-- Cargar Frame de TV y cargar el video de la webcam -->
-<div id="video_wrap">
-    <div id="video_overlays">
-
-    <div class="img-div-center">
-      <img src="data:<?php $plato['tipoimg']; ?>;base64,<?php echo base64_encode($plato['imagen']); ?>" class="img-centro-vert-hor" alt="" style="width:30%;height:30%">
-    </div>
-
-    </div> 
-    <video id="video_frame" playsinline autoplay  muted="muted"></video>
-</div>
-
-<!-- Capturamos la imagen a través de la API web y lo mostramos en el canvas -->
-<div class="button_controller">
-    <!-- Botón para capturar -->
-    <button id="snap_frame">Capturar Imagen</button>
-    <br/><br/>
-    <!-- Imagen de la Webcam -->
-    <canvas id="canvas_frame"></canvas>
-</div>
-
-
-<!-- Cargamos el Javascript -->
-<script type="text/javascript">
-'use strict'; // Para hacer que el código sea mas seguro.
-
-// Definimos las constantes que vamos a utilizar
-const videoFrame = document.getElementById('video_frame');
-const canvasFrame = document.getElementById('canvas_frame');
-const snapFrame = document.getElementById("snap_frame");
-const errorMsgElement = document.querySelector('span#errorMsg');
-
-// Definimos tamaño del video y si queremos audio o no
-const constraints = {
-    audio: true,
-    video: {
-        width: 720, height: 405
-    }
-};
-
-// Comprobamos acceso a la Webcam
-async function init() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        handleSuccess(stream);
-    } catch (e) {
-        errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
-    }
-}
-
-// En caso de que el acceso sea correcto, cargamos la webcam
-async function handleSuccess(stream) {
-    window.stream = stream;
-    videoFrame.srcObject = stream;
-}
-
-// Iniciamos JS
-init();
-
-// Hacemos captura de pantalla al hacer click
-var context = canvasFrame.getContext('2d');
-snapFrame.addEventListener("click", function() {
-    context.drawImage(videoFrame, 0, 0, 320, 140);
-});
-
-const $listaDeDispositivos = document.querySelector("#listaDeDispositivos");
- 
- // La función que es llamada después de que ya se dieron los permisos
- // Lo que hace es llenar el select con los dispositivos obtenidos
- const llenarSelectConDispositivosDisponibles = () => {
-  
-     navigator
-         .mediaDevices
-         .enumerateDevices()
-         .then(function (dispositivos) {
-             const dispositivosDeVideo = [];
-             dispositivos.forEach(function (dispositivo) {
-                 const tipo = dispositivo.kind;
-                 if (tipo === "videoinput") {
-                     dispositivosDeVideo.push(dispositivo);
-                 }
-             });
-  
-             // Vemos si encontramos algún dispositivo, y en caso de que si, entonces llamamos a la función
-             if (dispositivosDeVideo.length > 0) {
-                 // Llenar el select
-                 dispositivosDeVideo.forEach(dispositivo => {
-                     const option = document.createElement('option');
-                     option.value = dispositivo.deviceId;
-                     option.text = dispositivo.label;
-                     $listaDeDispositivos.appendChild(option);
-                     console.log("$listaDeDispositivos => ", $listaDeDispositivos)
-                 });
-             }
-         });
- }
-</script>
-
+	</div>
+	<br>
+	<video muted="muted" id="video"></video>
+	<canvas id="canvas" style="display: none;"></canvas>
 </body>
+<script type="text/javascript">
+	/*
+    Tomar una fotografía y guardarla en un archivo v3
+    @date 2018-10-22
+    @author parzibyte
+    @web parzibyte.me/blog
+*/
+const tieneSoporteUserMedia = () =>
+    !!(navigator.getUserMedia || (navigator.mozGetUserMedia || navigator.mediaDevices.getUserMedia) || navigator.webkitGetUserMedia || navigator.msGetUserMedia)
+const _getUserMedia = (...arguments) =>
+    (navigator.getUserMedia || (navigator.mozGetUserMedia || navigator.mediaDevices.getUserMedia) || navigator.webkitGetUserMedia || navigator.msGetUserMedia).apply(navigator, arguments);
+
+// Declaramos elementos del DOM
+const $video = document.querySelector("#video"),
+    $canvas = document.querySelector("#canvas"),
+    $estado = document.querySelector("#estado"),
+    $boton = document.querySelector("#boton"),
+    $listaDeDispositivos = document.querySelector("#listaDeDispositivos");
+
+const limpiarSelect = () => {
+    for (let x = $listaDeDispositivos.options.length - 1; x >= 0; x--)
+        $listaDeDispositivos.remove(x);
+};
+const obtenerDispositivos = () => navigator
+    .mediaDevices
+    .enumerateDevices();
+
+// La función que es llamada después de que ya se dieron los permisos
+// Lo que hace es llenar el select con los dispositivos obtenidos
+const llenarSelectConDispositivosDisponibles = () => {
+
+    limpiarSelect();
+    obtenerDispositivos()
+        .then(dispositivos => {
+            const dispositivosDeVideo = [];
+            dispositivos.forEach(dispositivo => {
+                const tipo = dispositivo.kind;
+                if (tipo === "videoinput") {
+                    dispositivosDeVideo.push(dispositivo);
+                }
+            });
+
+            // Vemos si encontramos algún dispositivo, y en caso de que si, entonces llamamos a la función
+            if (dispositivosDeVideo.length > 0) {
+                // Llenar el select
+                dispositivosDeVideo.forEach(dispositivo => {
+                    const option = document.createElement('option');
+                    option.value = dispositivo.deviceId;
+                    option.text = dispositivo.label;
+                    $listaDeDispositivos.appendChild(option);
+                });
+            }
+        });
+}
+
+(function() {
+    // Comenzamos viendo si tiene soporte, si no, nos detenemos
+    if (!tieneSoporteUserMedia()) {
+        alert("Lo siento. Tu navegador no soporta esta característica");
+        $estado.innerHTML = "Parece que tu navegador no soporta esta característica. Intenta actualizarlo.";
+        return;
+    }
+    //Aquí guardaremos el stream globalmente
+    let stream;
+
+
+    // Comenzamos pidiendo los dispositivos
+    obtenerDispositivos()
+        .then(dispositivos => {
+            // Vamos a filtrarlos y guardar aquí los de vídeo
+            const dispositivosDeVideo = [];
+
+            // Recorrer y filtrar
+            dispositivos.forEach(function(dispositivo) {
+                const tipo = dispositivo.kind;
+                if (tipo === "videoinput") {
+                    dispositivosDeVideo.push(dispositivo);
+                }
+            });
+
+            // Vemos si encontramos algún dispositivo, y en caso de que si, entonces llamamos a la función
+            // y le pasamos el id de dispositivo
+            if (dispositivosDeVideo.length > 0) {
+                // Mostrar stream con el ID del primer dispositivo, luego el usuario puede cambiar
+                mostrarStream(dispositivosDeVideo[0].deviceId);
+            }
+        });
+
+
+
+    const mostrarStream = idDeDispositivo => {
+        _getUserMedia({
+                video: {
+                    // Justo aquí indicamos cuál dispositivo usar
+                    deviceId: idDeDispositivo,
+                }
+            },
+            (streamObtenido) => {
+                // Aquí ya tenemos permisos, ahora sí llenamos el select,
+                // pues si no, no nos daría el nombre de los dispositivos
+                llenarSelectConDispositivosDisponibles();
+
+                // Escuchar cuando seleccionen otra opción y entonces llamar a esta función
+                $listaDeDispositivos.onchange = () => {
+                    // Detener el stream
+                    if (stream) {
+                        stream.getTracks().forEach(function(track) {
+                            track.stop();
+                        });
+                    }
+                    // Mostrar el nuevo stream con el dispositivo seleccionado
+                    mostrarStream($listaDeDispositivos.value);
+                }
+
+                // Simple asignación
+                stream = streamObtenido;
+
+                // Mandamos el stream de la cámara al elemento de vídeo
+                $video.srcObject = stream;
+                $video.play();
+
+                //Escuchar el click del botón para tomar la foto
+                //Escuchar el click del botón para tomar la foto
+                $boton.addEventListener("click", function() {
+
+                    //Pausar reproducción
+                    $video.pause();
+
+                    //Obtener contexto del canvas y dibujar sobre él
+                    let contexto = $canvas.getContext("2d");
+                    $canvas.width = $video.videoWidth;
+                    $canvas.height = $video.videoHeight;
+                    contexto.drawImage($video, 0, 0, $canvas.width, $canvas.height);
+
+                    let foto = $canvas.toDataURL(); //Esta es la foto, en base 64
+                    $estado.innerHTML = "Enviando foto. Por favor, espera...";
+                    fetch("./guardar_foto.php", {
+                            method: "POST",
+                            body: encodeURIComponent(foto),
+                            headers: {
+                                "Content-type": "application/x-www-form-urlencoded",
+                            }
+                        })
+                        .then(resultado => {
+                            // A los datos los decodificamos como texto plano
+                            return resultado.text()
+                        })
+                        .then(nombreDeLaFoto => {
+                            // nombreDeLaFoto trae el nombre de la imagen que le dio PHP
+                            console.log("La foto fue enviada correctamente");
+                            $estado.innerHTML = `Foto guardada con éxito. Puedes verla <a target='_blank' href='./${nombreDeLaFoto}'> aquí</a>`;
+                        })
+
+                    //Reanudar reproducción
+                    $video.play();
+                });
+            }, (error) => {
+                console.log("Permiso denegado o error: ", error);
+                $estado.innerHTML = "No se puede acceder a la cámara, o no diste permiso.";
+            });
+    }
+})();
+	</script>
+
 </html>
