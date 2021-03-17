@@ -16,6 +16,24 @@
 			video {
 				max-width: 100%;
 			}
+		} 
+		#video_wrap {
+		    position: absolute;
+		}
+		#video_overlays {
+		    position: absolute;
+		}
+		#video_overlays img {
+		    width: 850px;
+		    height: 450px;
+		}
+		#video_frame {
+		    width: 720px;
+		}
+		#canvas_frame {
+		    width: 320px;
+		    height: 200px;
+		    float: right;
 		}
 	</style>
 </head>
@@ -32,7 +50,14 @@
 		<p id="estado"></p>
 	</div>
 	<br>
+	<div id="video_wrap">
+		    <div id="video_overlays">
+		    <div class="img-div-center">
+		      <img src="plato.png" class="img-centro-vert-hor" alt="" style="width:30%;height:30%">
+		    </div>
+		    </div> 
 	<video muted="muted" id="video"></video>
+	</div>
 	<canvas id="canvas" style="display: none;"></canvas>
 </body>
 <script type="text/javascript">
