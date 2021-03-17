@@ -24,8 +24,11 @@
 		    position: absolute;
 		}
 		#video_overlays img {
-		    width: 850px;
-		    height: 450px;
+		    max-width:180px;
+		    height: auto;
+		  position: relative;
+		  top: 50%;
+		  left: 50%;
 		}
 		#video_frame {
 		    width: 720px;
@@ -34,18 +37,6 @@
 		    width: 320px;
 		    height: 200px;
 		    float: right;
-		}
-		.img-div-center{
-		  height: 80%;
-		  position: relative;
-		}
-
-		.img-centro-vert-hor{
-		  position: relative;
-		  top: 50%;
-		  left: 50%;
-		  width: auto;
-		 transform: translate(-50%, -50%);
 		}
 	</style>
 </head>
@@ -65,7 +56,7 @@
 	<div id="video_wrap">
 		    <div id="video_overlays">
 		    <div class="img-div-center">
-		      <img src="pikachu.png" class="img-centro-vert-hor" alt="" style="max-width:180px;">
+		      <img src="pikachu.png" class="img-centro-vert-hor" alt="" style="">
 		    </div>
 		    </div> 
 	<video muted="muted" id="video"></video>
