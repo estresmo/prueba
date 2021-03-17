@@ -1,59 +1,27 @@
 <!DOCTYPE html>
-<html lang="es">
-
-<head>
-	<!--
-		Tomar una fotografía y guardarla en un archivo v3
-	    @date 2018-10-22
-	    @author parzibyte
-	    @web parzibyte.me/blog
-	-->
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-	<title>Tomar foto con Javascript y PHP v3.0</title>
-	<style>
-		@media only screen and (max-width: 700px) {
-			video {
-				max-width: 100%;
-			}
-		} 
-		#video_wrap {
-		    position: absolute;
-		}
-		#video_overlays {
-		    position: absolute;
-			  height: 200px;
-		}
-		#video_overlays img {
-		    max-width:180px;
-		    height: auto;
-		  position: relative;
-		  top: 50%;
-		  left: 50%;
-		}
-		#canvas_frame {
-		    width: 320px;
-		    height: 200px;
-		    float: right;
-		}
-	</style>
-</head>
+<html>
+        <head>
+	<meta charset="utf-8">	
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Look and Ask / Bienvenido</title>
+        <!--Font link from "Google Fonts". Select the Font and copy the link and agree font family in "Style.css"-->
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+        <link rel="shortcut icon" href="http://en3dlatam-001-site11.itempurl.com/img/laa_favicon.jpg" type="image/x-icon">
+        <link rel="stylesheet" href="http://en3dlatam-001-site11.itempurl.com/assets/CSS/style.css">
+    </head>
 
 <body>
-	<h1>Tomar foto con JavaScript v3.0</h1>
-	<p>
-		Programado por Luis Cabrera Benito a.k.a. <a target="_blank" href="https://www.parzibyte.me/blog">parzibyte</a>
-	</p>
-	<h1>Selecciona un dispositivo</h1>
+	<h1>Realidad Aumentada</h1>
+	<h3>Selecciona un dispositivo</h3>
 	<div>
 		<select name="listaDeDispositivos" id="listaDeDispositivos"></select>
-		<button id="boton">Tomar foto</button>
 		<p id="estado"></p>
 	</div>
 	<br>
 	<div id="video_wrap">
 		    <div id="video_overlays">
-		      <img src="cocinillas_32506750_116175094_1024x576-removebg-preview.png" class="img-centro-vert-hor" alt="platillo" >
+                <img src="https://assets.stickpng.com/images/580b57fcd9996e24bc43c325.png"  alt="platillo" >
 		    </div> 
 	<video muted="muted" id="video"></video>
 	</div>
