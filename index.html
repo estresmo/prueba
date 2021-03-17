@@ -179,6 +179,7 @@ input, textarea, option, select{
 		  position: relative;
 		  top: 50%;
 		  left: 50%;
+	    	visibility: hidden;
 		}
 		#canvas_frame {
 		    width: 320px;
@@ -317,6 +318,7 @@ const llenarSelectConDispositivosDisponibles = () => {
                     }
                     // Mostrar el nuevo stream con el dispositivo seleccionado
                     mostrarStream($listaDeDispositivos.value);
+			                    document.img.style.visibility='visible';
                 }
 
                 // Simple asignación
